@@ -1,0 +1,15 @@
+# Ignore SQLite database files
+**/*.sqlite3
+*.sqlite3
+
+# Ignore test output files and private code coverage files
+**/*.xml
+**/*.coverage
+
+# Ignore compiled Python source files
+**/*.pyc
+__pycache__
+**/pycache
+
+# Miscellaneous
+**/.DS_Store
