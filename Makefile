@@ -1,9 +1,16 @@
-.PHONY: test release clean version
+.PHONY: test release clean version login logout publish
 
 export APP_VERSION ?= $(shell git rev-parse --short HEAD)
 
 version:
 	@ echo '{"Version": "$(APP_VERSION)"}'
+
+login:
+	# $$(aws ecr get-login-password --region us-east-1 --profile attipoe.simons | docker login --username AWS --password-stdin 017407980814.dkr.ecr.us-east-1.amazonaws.com)
+	$$(aws ecr get-login --no-include-email --profile attipoe.simons)
+
+logout:
+	docker logout https://017407980814.dkr.ecr.us-east-1.amazonaws.com
 
 test:
 	docker-compose build --pull release
@@ -16,7 +23,10 @@ release:
 	docker-compose up --abort-on-container-exit acceptance
 	@ echo App running at http://$$(docker-compose port app 8000 | sed s/0.0.0.0/localhost/g)
 
+publish:
+	docker-compose push release app
+
 clean:
 	docker-compose down -v
 	docker images -q -f dangling=true -f label=application=todobackend | xargs -I ARGS docker rmi -f --no-prune ARGS 
-	docker images -q -f dangling=true |  xargs -I ARGS docker rmi -f --no-prune ARGS 
+	
